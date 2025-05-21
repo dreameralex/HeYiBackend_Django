@@ -38,3 +38,18 @@ class Company_detailView(GenericViewSet, ListModelMixin):
     def list(self, request, *args, **kwargs):
         res = super().list(request, *args, **kwargs)
         return Response({'code': 100, 'msg': '成功', 'company_detail': res.data})
+
+# 公告接口
+from .models import Notice
+from  .serializer import NoticeSerializer
+
+class NoticeView(GenericViewSet, ListModelMixin):
+    queryset = Notice.objects.all().order_by('create_time')
+    serializer_class = NoticeSerializer
+
+# 活动
+from .models import Activity
+from .serializer import ActivitySerializer
+class ActivityView(GenericViewSet,ListModelMixin):
+    queryset =Activity.objects.all().order_by('date')
+    serializer_class = ActivitySerializer

@@ -22,7 +22,7 @@ class Notice(models.Model):
 
     content = models.TextField(verbose_name='内容')
 
-    igm = models.ImageField(upload_to='notice', default='notice.png', verbose_name='公告图片')
+    img = models.ImageField(upload_to='notice', default='notice.png', verbose_name='公告图片')
 
     create_time = models.DateTimeField(auto_now=True, verbose_name='创建时间')
 
@@ -45,3 +45,49 @@ class Company_Detail(models.Model):
 
     def __str__(self):
         return str(self.img_header)
+
+##表模型
+class UserInfo(models.Model):
+    name = models.CharField(verbose_name="姓名", max_length=32)
+    avatar = models.FileField(verbose_name="头像", max_length=128, upload_to='avatar')
+    create_date = models.DateField(verbose_name="日期", auto_now_add=True)
+    score = models.IntegerField(verbose_name="积分", default=0)
+
+    # 用户用手机号登录，手机号
+    mobile = models.CharField(verbose_name="手机号",max_length=11,null=True)
+
+    class Meta:
+        verbose_name_plural = '用户表'
+    def __str__(self):
+        return self.name
+
+#  活动表
+class Activity(models.Model):
+    title = models.CharField(verbose_name="活动标题", max_length=128)
+    text = models.TextField(verbose_name="活动描述", null=True, blank=True)
+    date = models.DateField(verbose_name="举办活动日期")
+
+    count = models.IntegerField(verbose_name='报名人数', default=0)
+    total_count = models.IntegerField(verbose_name='总人数', default=0)
+    score = models.IntegerField(verbose_name="积分", default=0)
+
+
+    join_record = models.ManyToManyField(verbose_name="参与者",
+                                         through="JoinRecord",
+                                         through_fields=("activity", "user"),
+                                         to="UserInfo")
+
+    class Meta:
+        verbose_name_plural = '活动表'
+
+    def __str__(self):
+        return self.title
+#  活动报名记录
+class JoinRecord(models.Model):
+    user = models.ForeignKey(verbose_name='用户', to="UserInfo", on_delete=models.CASCADE)
+    activity = models.ForeignKey(verbose_name="活动", to="Activity", on_delete=models.CASCADE, related_name='ac')
+
+    exchange = models.BooleanField(verbose_name="是否已兑换", default=False)
+
+    class Meta:
+        verbose_name_plural = '活动报名记录'
